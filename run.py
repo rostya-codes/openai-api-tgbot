@@ -19,7 +19,8 @@ async def main():
     dp.include_routers(user, admin)
     dp.startup.register(startup)
     dp.shutdown.register(shutdown)
-    
+
+    await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot)
 
 

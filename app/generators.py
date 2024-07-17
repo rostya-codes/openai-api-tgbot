@@ -11,7 +11,4 @@ async def gpt_text(req, model):
         messages=[{'role': 'user', 'content': req}],
         model=model
     )
-    print(completion.choices[0].message.content)
-
-
-asyncio.run(gpt_text('Hello World на C++', 'gpt-4o'))
+    return completion.choices[0].message.content
