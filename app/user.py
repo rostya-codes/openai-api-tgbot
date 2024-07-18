@@ -1,4 +1,6 @@
 from decimal import Decimal
+import uuid
+import os
 
 from aiogram import Router, F
 from aiogram.fsm.context import FSMContext
@@ -8,7 +10,7 @@ from aiogram.filters import CommandStart, Command
 from app.database.requests import set_user, get_user, calculate
 import app.keyboards as kb
 from app.states import Chat, Image
-from app.generators import gpt_text, gpt_image
+from app.generators import gpt_text, gpt_image, gpt_vision
 
 # from middlewares import BaseMiddleware
 
@@ -36,6 +38,25 @@ async def chatting_handler(message: Message, state: FSMContext):
         await message.answer('🪙❌ Insufficient funds on balance.')
 
 
+@user.message(Chat.text, F.photo)
+async def chat_response_handler(message: Message, state: FSMContext):
+    """Chat response handler"""
+    tg_user = await get_user(message.from_user.id)
+    if Decimal(tg_user.balance) > 0:
+        await state.set_state(Chat.wait)
+        file = await message.bot.get_file(message.photo[-1].file_id)
+        file_path = file.file_path
+        file_name = uuid.uuid4()
+        await message.bot.download_file(file_path, f'{file_name}.jpeg')
+        response = await gpt_vision(message.caption, 'gpt-4o', f'{file_name}.jpeg')
+        await calculate(message.from_user.id, response['usage'], 'gpt-4o', tg_user)
+        await message.answer(response['response'])
+        await state.set_state(Chat.text)
+        os.remove(f'{file_name}.jpeg')
+    else:
+        await message.answer('🪙❌ Insufficient funds on balance.')
+
+
 @user.message(Chat.text)
 async def chat_response_handler(message: Message, state: FSMContext):
     """Chat response handler"""
@@ -43,7 +64,7 @@ async def chat_response_handler(message: Message, state: FSMContext):
     if Decimal(tg_user.balance) > 0:
         await state.set_state(Chat.wait)
         response = await gpt_text(message.text, 'gpt-4o')
-        await calculate(message.from_user.id, response['usage'], 'gpt-4o')
+        await calculate(message.from_user.id, response['usage'], 'gpt-4o', tg_user)
         await message.answer(response['response'])
         await state.set_state(Chat.text)
     else:
@@ -51,7 +72,7 @@ async def chat_response_handler(message: Message, state: FSMContext):
 
 
 @user.message(F.text == '🖼️ Image generation')
-async def chatting_handler(message: Message, state: FSMContext):
+async def chatting_image_handler(message: Message, state: FSMContext):
     """Chatting handler"""
     tg_user = await get_user(message.from_user.id)
     if Decimal(tg_user.balance) > 0:
@@ -62,13 +83,13 @@ async def chatting_handler(message: Message, state: FSMContext):
 
 
 @user.message(Image.text)
-async def chat_response_handler(message: Message, state: FSMContext):
+async def chat_response_image_handler(message: Message, state: FSMContext):
     """Chat response handler"""
     tg_user = await get_user(message.from_user.id)
     if Decimal(tg_user.balance) > 0:
         await state.set_state(Image.wait)
         response = await gpt_image(message.text, 'dall-e-3')
-        await calculate(message.from_user.id, response['usage'], 'dall-e-3')
+        await calculate(message.from_user.id, response['usage'], 'dall-e-3', tg_user)
         print(response)
         try:
             await message.answer_photo(response['response'])
