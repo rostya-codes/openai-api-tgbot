@@ -5,3 +5,9 @@ class Chat(StatesGroup):
 
     text = State()
     wait = State()
+
+
+class Image(StatesGroup):
+
+    text = State()
+    wait = State()
