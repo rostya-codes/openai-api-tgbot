@@ -22,7 +22,7 @@ class User(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
 
     tg_id = mapped_column(BigInteger)
-    username: Mapped[str] = mapped_column(String(34))
+    username: Mapped[str] = mapped_column(String(34), default='')
     balance: Mapped[str] = mapped_column(String(15))
 
 
