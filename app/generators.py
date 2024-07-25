@@ -1,4 +1,3 @@
-import asyncio
 import base64
 import aiohttp
 import aiofiles
@@ -71,7 +70,8 @@ async def gpt_vision(req, model, file):
             })
 
     async with aiohttp.ClientSession() as session:
-        async with session.post('https://api.openai.com/v1/chat/completions', headers=headers, json=payload) as response:
+        async with session.post(
+                'https://api.openai.com/v1/chat/completions', headers=headers, json=payload) as response:
             completion = await response.json()
             print(completion)
     return {'response': completion['choices'][0]['message']['content'],

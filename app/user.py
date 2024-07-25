@@ -16,6 +16,8 @@ from app.generators import gpt_text, gpt_image, gpt_vision
 
 user = Router()
 
+model = 'gpt-4o-mini'
+
 # user.message.middleware(BaseMiddleware())
 
 
@@ -48,8 +50,8 @@ async def chat_response_handler(message: Message, state: FSMContext):
         file_path = file.file_path
         file_name = uuid.uuid4()
         await message.bot.download_file(file_path, f'{file_name}.jpeg')
-        response = await gpt_vision(message.caption, 'gpt-4o', f'{file_name}.jpeg')
-        await calculate(message.from_user.id, response['usage'], 'gpt-4o', tg_user)
+        response = await gpt_vision(message.caption, model, f'{file_name}.jpeg')
+        await calculate(message.from_user.id, response['usage'], model, tg_user)
         await message.answer(response['response'])
         await state.set_state(Chat.text)
         os.remove(f'{file_name}.jpeg')
@@ -63,8 +65,8 @@ async def chat_response_handler(message: Message, state: FSMContext):
     tg_user = await get_user(message.from_user.id)
     if Decimal(tg_user.balance) > 0:
         await state.set_state(Chat.wait)
-        response = await gpt_text(message.text, 'gpt-4o')
-        await calculate(message.from_user.id, response['usage'], 'gpt-4o', tg_user)
+        response = await gpt_text(message.text, model)
+        await calculate(message.from_user.id, response['usage'], model, tg_user)
         await message.answer(response['response'])
         await state.set_state(Chat.text)
     else:
