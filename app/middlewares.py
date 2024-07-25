@@ -1,7 +1,7 @@
+from typing import Any, Awaitable, Callable, Dict
+
 from aiogram import BaseMiddleware
 from aiogram.types import Message
-
-from typing import Callable, Dict, Any, Awaitable
 
 
 class CounterMiddleware(BaseMiddleware):

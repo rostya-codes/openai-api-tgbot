@@ -1,16 +1,16 @@
-from decimal import Decimal
-import uuid
 import os
+import uuid
+from decimal import Decimal
 
-from aiogram import Router, F
+from aiogram import F, Router
+from aiogram.filters import Command, CommandStart
 from aiogram.fsm.context import FSMContext
-from aiogram.types import Message, CallbackQuery
-from aiogram.filters import CommandStart, Command
+from aiogram.types import CallbackQuery, Message
 
-from app.database.requests import set_user, get_user, calculate
 import app.keyboards as kb
+from app.database.requests import calculate, get_user, set_user
+from app.generators import gpt_image, gpt_text, gpt_vision
 from app.states import Chat, Image
-from app.generators import gpt_text, gpt_image, gpt_vision
 
 # from middlewares import BaseMiddleware
 

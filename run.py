@@ -1,20 +1,19 @@
 import asyncio
+
 from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 
-from app.user import user
 from app.admin import admin
-
-from config import TOKEN
-
 from app.database.models import async_main
+from app.user import user
+from config import TOKEN
 
 
 async def main():
     bot = Bot(token=TOKEN,
               default=DefaultBotProperties(parse_mode=ParseMode.HTML))
-    
+
     dp = Dispatcher()
     dp.include_routers(user, admin)
     dp.startup.register(startup)

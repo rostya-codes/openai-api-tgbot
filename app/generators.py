@@ -1,6 +1,7 @@
 import base64
-import aiohttp
+
 import aiofiles
+import aiohttp
 from openai import AsyncOpenAI
 
 from config import AI_API_TOKEN
