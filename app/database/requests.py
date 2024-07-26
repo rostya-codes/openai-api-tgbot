@@ -19,7 +19,7 @@ async def set_user(session, tg_id, username):
     user = await session.scalar(select(User).where(User.tg_id == tg_id))
 
     if not user:
-        session.add(User(tg_id=tg_id, username=username, balance='0.15'))
+        session.add(User(tg_id=tg_id, username=username, balance='0.10'))
         await session.commit()
 
 
@@ -27,6 +27,12 @@ async def set_user(session, tg_id, username):
 async def get_user(session, tg_id):
     """Get user from database"""
     return await session.scalar(select(User).where(User.tg_id == tg_id))
+
+
+@connection
+async def get_users(session):
+    """Get all users from database"""
+    return await session.scalars(select(User))
 
 
 @connection

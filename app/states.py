@@ -11,3 +11,8 @@ class Image(StatesGroup):
 
     text = State()
     wait = State()
+
+
+class Newsletter(StatesGroup):
+
+    message = State()

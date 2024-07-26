@@ -22,6 +22,7 @@ model = 'gpt-4o-mini'
 
 
 @user.message(F.text == '✖️ Cancel')
+@user.message(Command('cancel'))
 @user.message(CommandStart())
 async def cmd_start(message: Message, state: FSMContext):
     await set_user(message.from_user.id, message.from_user.username)
