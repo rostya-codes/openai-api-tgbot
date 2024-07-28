@@ -7,6 +7,3 @@ exclude =
     .idea,
     .venv,
     config.py,
-    orders/migrations,
-    products/migrations,
-    users/migrations,
